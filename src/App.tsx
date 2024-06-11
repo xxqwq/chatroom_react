@@ -1,7 +1,9 @@
 import SideBar from './components/SiderBar/SiderBar';
 import { Routes, Route } from 'react-router-dom';
-import { Login } from './pages/Login/Login';
-import Home from './pages/Home/Home';
+import Login from './pages/Login/Login';
+import Chat from './pages/Chat/Chat';
+import PersonCenter from './pages/PersonCenter/PersonCenter';
+import NotFound from './pages/NotFound/NotFound';
 
 import { Layout } from 'antd';
 const { Sider } = Layout;
@@ -11,7 +13,7 @@ const siderStyle: React.CSSProperties = {
   backgroundColor: '#fff',
 };
 
-const defaultPage:React.CSSProperties = {
+const defaultPage: React.CSSProperties = {
   height: '100%',
   display: 'flex',
   justifyContent: 'center',
@@ -23,20 +25,22 @@ const defaultPage:React.CSSProperties = {
 
 function App() {
   return (
-      <Layout style={{ height: '100%' }}>
-        <Sider style={siderStyle} width={250}>
-          <SideBar></SideBar>
-        </Sider>
-        <Layout>
+    <Layout style={{ height: '100%' }}>
+      <Sider style={siderStyle} width={250}>
+        <SideBar></SideBar>
+      </Sider>
+      <Layout>
           <Routes>
             <Route path='/' element={<div style={defaultPage}>
               登录获取更好的体验
             </div>}></Route>
             <Route path='/login' element={<Login />}></Route>
-            <Route path='/chat' element={<Home />}></Route>
+            <Route path='/chat/:type/:id' element={<Chat />}></Route>
+            <Route path='/personCenter/:id' element={<PersonCenter />}></Route>
+            <Route path='*' element={<NotFound />}></Route>
           </Routes>
-        </Layout>
       </Layout>
+    </Layout>
   );
 }
 

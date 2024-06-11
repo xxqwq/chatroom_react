@@ -8,7 +8,7 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
 
   const handleLogin = () => {
     console.log('登录')
-    navigate('/chat')
+    navigate('/personCenter/1')
   }
 
   const handleRegister = () => {
@@ -58,7 +58,7 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
             placeholder="请输入验证码"
             allowClear
             enterButton="发送验证码"
-            // onSearch={onSearch}
+          // onSearch={onSearch}
           />
         </Form.Item>
         <Form.Item style={{ textAlign: 'center' }}>
@@ -71,7 +71,7 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
 
 }
 
-export const Login = () => {
+export default () => {
   const [formType, setFormType] = useState('login') // ['login', 'register']
 
   const toggleFormType = () => {

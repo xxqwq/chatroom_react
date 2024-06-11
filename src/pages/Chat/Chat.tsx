@@ -1,14 +1,19 @@
 import { Layout, Input, Flex, Button, Avatar, message } from 'antd';
-import { MemberItemWrapper, MemberListWrapper } from './style.js'
+import { LeftOutlined } from '@ant-design/icons'
+import { MemberItemWrapper, MemberListWrapper, ButtonWrapper } from './style.js'
+import { useNavigate, useParams } from 'react-router-dom';
 const { TextArea } = Input;
 const { Header, Content, Footer } = Layout;
 
 const headerStyle: React.CSSProperties = {
   textAlign: 'center',
-  color: '#fff',
-  paddingInline: 50,
-  lineHeight: '64px',
+  color: '#000',
+  fontSize: '2rem',
+  paddingInline: 20,
   backgroundColor: '#7dbcea',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
 };
 
 const contentStyle: React.CSSProperties = {
@@ -39,9 +44,10 @@ const DialogPoper = function ({ identity, message, nickName }) {
       setPosition('start')
     }
   }, [identity])
+
   if (position === 'start') {
     return (
-      <Flex justify='start' align='center' style={{ margin: '10px 10px' }}>
+      <Flex justify='start' align='center' style={{ margin: '10px 10px', maxWidth: '45%' }}>
         <Flex vertical justify='start' align='start'>
           <div style={{ color: '#555', marginLeft: '5px' }}>{nickName}</div>
           <div style={{ background: '#fff', padding: '8px', margin: '5px', borderRadius: '10%' }}>
@@ -53,24 +59,34 @@ const DialogPoper = function ({ identity, message, nickName }) {
     )
   } else {
     return (
-      <Flex justify='end' align='center' style={{ margin: '10px 10px' }}>
-        <Flex vertical justify='start' align='start'>
-          <div style={{ color: '#555', marginLeft: '5px' }}>{nickName}</div>
-          <div style={{ background: '#fff', padding: '8px', margin: '5px', borderRadius: '10%' }}>
+      <Flex justify='end' align='center' style={{ margin: '10px 10px', maxWidth: '100%' }}>
+        <Flex vertical justify='start' align='start' style={{ maxWidth: '100%' }}>
+          <div style={{ color: '#555', marginLeft: 'auto' }}>{nickName}</div>
+          <div style={{ background: '#fff', padding: '8px', margin: '5px 5px 5px auto', borderRadius: '10px', wordWrap: 'break-word', maxWidth: 'calc(100% - 48px)', textAlign: 'start' }}>
             {message}
           </div>
         </Flex>
-        <Avatar size={48} />
+        <Avatar size={48} style={{ minWidth: '48px' }} />
       </Flex>
     )
   }
-
 }
 
 const MainContent = function ({ messages }) {
-  console.log(messages)
+  // 设置滚动容器
+  const scrollContainerRef = useRef(null)
+  // 当消息出现新的时候，滚动到底部
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const lastMessage = scrollContainerRef.current.lastElementChild;
+      if (lastMessage) {
+        lastMessage.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
+  }, [messages])
+
   return (
-    <div style={{ flex: 1 }}>
+    <div style={{ flex: 1, maxHeight: '100%', overflow: 'auto' }} ref={scrollContainerRef}>
       {messages.map(item => {
         return <DialogPoper {...item} key={item.id} />
       })}
@@ -182,8 +198,8 @@ const MemberList = function () {
         <Flex vertical align='start' justify='center' style={listStyle}>
           {memberList.map((item, index) => {
             return (
-              <MemberItemWrapper>
-                <Flex key={index} align='center'>
+              <MemberItemWrapper key={index} >
+                <Flex align='center'>
                   <Avatar size='small' />
                   <div style={{ marginLeft: '10px' }}>{item.nickName}</div>
                 </Flex>
@@ -199,7 +215,9 @@ const MemberList = function () {
 const Home = function () {
   const [msg, setMessage] = useState('')
   const [messages, setMessages] = useState([])
-
+  const navigate = useNavigate()
+  // 聊天对象
+  const { type, id } = useParams()
   const handleSend = () => {
     message.success('发送成功')
     setMessages((prev) => [
@@ -218,12 +236,23 @@ const Home = function () {
     console.log(messages)
   }, [messages])
 
+  const handleBack = () => {
+    navigate('/personCenter/1')
+  }
+
   return (
     <>
-      <Header style={headerStyle}>聊天名</Header>
+      <Header style={headerStyle} onClick={handleBack}>
+        <ButtonWrapper >
+          {/* <Button shape='round' icon={<LeftOutlined />}>返回首页</Button> */}
+          <LeftOutlined />
+          <span>返回首页</span>
+          </ButtonWrapper>
+        <div style={{ textAlign: 'center', flexGrow: 1 }}>{id}</div>
+      </Header>
       <Content style={contentStyle}>
         <MainContent messages={messages} />
-        <MemberList />
+        {type === 'group' && <MemberList />}
       </Content>
       <Footer style={footerStyle}>
         <TextArea

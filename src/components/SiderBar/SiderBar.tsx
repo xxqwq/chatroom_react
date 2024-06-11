@@ -1,45 +1,32 @@
 import { Button, List, Avatar, Input, Badge, Spin } from 'antd';
 import { LoginOutlined, ClockCircleOutlined } from '@ant-design/icons';
 import { SiderWrapper } from './style.js';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const { Search } = Input
 const SideBar = function () {
   const location = useLocation()
+  const navigate = useNavigate()
+  // 加载中
+  const [loading, setLoading] = useState(false)
+  
+  // 好友数据
   const data = [
     {
-      nickName: 'Ant Design Title 1',
+      id: '1',
+      nickName: '小明',
+      type:'friend'
     },
     {
-      nickName: 'Ant Design Title 2',
+      id: '2',
+      nickName: '小红',
+      type:'friend'
     },
     {
-      nickName: 'Ant Design Title 3',
-    },
-    {
-      nickName: 'Ant Design Title 4',
-    },
-    {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    }, {
-      nickName: 'Ant Design Title 4',
-    },
+      id:'3',
+      nickName: '群聊1',
+      type:'group'
+    }
   ];
 
   // 搜索
@@ -47,8 +34,11 @@ const SideBar = function () {
     console.log(value);
     setLoading(!loading)
   }
-  // 加载中
-  const [loading, setLoading] = useState(false)
+
+  // 跳转到聊天页面
+  const handleChat = (type:string,id: string) => {
+    navigate(`/chat/${type}/${id}`)
+  }
 
   if (location.pathname === '/login') {
     // 登录页
@@ -91,7 +81,7 @@ const SideBar = function () {
             dataSource={data}
             split={false}
             renderItem={(item, index) => (
-              <List.Item>
+              <List.Item onClick={()=>handleChat(item.type,item.id)}>
                 <List.Item.Meta
                   avatar={
                     (
@@ -100,7 +90,7 @@ const SideBar = function () {
                       </Badge>
                     )
                   }
-                  title={<a href="https://ant.design">{item.nickName}</a>}
+                  title={<a >{item.nickName}</a>}
                   description="好友"
                 />
               </List.Item>
