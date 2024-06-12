@@ -2,26 +2,65 @@ import { LoginWrapper } from './style.js';
 import { Button, Form, Input, Card } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { login,register,sendCode } from '@/apis/login.ts'
+
 const { Search } = Input
 const LoginAndResForm = ({ formType, toggleFormType }) => {
   const navigate = useNavigate()
+  const [form] = Form.useForm()
 
-  const handleLogin = () => {
-    console.log('登录')
-    navigate('/personCenter/1')
+  const handleLogin = async () => {
+    try {
+      const res = await login({
+        username: form.getFieldValue('username'),
+        password: form.getFieldValue('password'),
+      })
+      if (res.code == "200") {
+        navigate('/personCenter/1')
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
 
-  const handleRegister = () => {
-    console.log('注册')
+  const handleRegister = async() => {
+    form.getFieldValue('email')
+    try {
+      const res = await register({
+        username: form.getFieldValue('username'),
+        password: form.getFieldValue('password'),
+        email: form.getFieldValue('email'),
+        code: form.getFieldValue('code'),
+        nickname: form.getFieldValue('nickname')
+      })
+      if (res.code == "200") {
+        setTimeout(() => {
+          toggleFormType()
+        }, 1000);
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
 
+  const handleSend = async()=>{
+    console.log(form.getFieldsValue())
+    try{
+      const res = await sendCode({
+        email: form.getFieldValue('email')
+      })
+      console.log(res)
+    }catch (err) {
+      console.log(err)
+    }
+  }
   if (formType === 'login') {
     return (
-      <Form>
-        <Form.Item label='账号'>
-          <Input placeholder='请输入账号' prefix={<UserOutlined />} />
+      <Form form={form}>
+        <Form.Item label='账号' name='username'>
+          <Input placeholder='请输入账号' prefix={<UserOutlined />}/>
         </Form.Item>
-        <Form.Item label='密码'>
+        <Form.Item label='密码' name='password'>
           <Input
             placeholder='请输入密码'
             type='password'
@@ -36,29 +75,32 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
     )
   } else {
     return (
-      <Form>
-        <Form.Item label='账号'>
+      <Form form={form}>
+        <Form.Item label='账号' name='username'>
           <Input placeholder='请输入账号' prefix={<UserOutlined />} />
         </Form.Item>
-        <Form.Item label='密码'>
+        <Form.Item label='昵称' name='nickname'>
+          <Input placeholder='请输入昵称' prefix={<UserOutlined />} />
+        </Form.Item>
+        <Form.Item label='密码' name='password'>
           <Input
             placeholder='请输入密码'
             type='password'
             prefix={<LockOutlined />}
           />
         </Form.Item>
-        <Form.Item label='邮箱'>
+        <Form.Item label='邮箱' name='email'>
           <Input
             placeholder='请输入邮箱'
             prefix={<MailOutlined />}
           />
         </Form.Item>
-        <Form.Item label='验证码'>
+        <Form.Item label='验证码' name='code'>
           <Search
             placeholder="请输入验证码"
             allowClear
             enterButton="发送验证码"
-          // onSearch={onSearch}
+          onSearch={handleSend}
           />
         </Form.Item>
         <Form.Item style={{ textAlign: 'center' }}>

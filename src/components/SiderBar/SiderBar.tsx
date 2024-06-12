@@ -6,26 +6,27 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 const { Search } = Input
 const SideBar = function () {
   const location = useLocation()
+  console.log(location)
   const navigate = useNavigate()
   // 加载中
   const [loading, setLoading] = useState(false)
-  
+
   // 好友数据
   const data = [
     {
       id: '1',
       nickName: '小明',
-      type:'friend'
+      type: 'friend'
     },
     {
       id: '2',
       nickName: '小红',
-      type:'friend'
+      type: 'friend'
     },
     {
-      id:'3',
+      id: '3',
       nickName: '群聊1',
-      type:'group'
+      type: 'group'
     }
   ];
 
@@ -36,7 +37,7 @@ const SideBar = function () {
   }
 
   // 跳转到聊天页面
-  const handleChat = (type:string,id: string) => {
+  const handleChat = (type: string, id: string) => {
     navigate(`/chat/${type}/${id}`)
   }
 
@@ -81,7 +82,7 @@ const SideBar = function () {
             dataSource={data}
             split={false}
             renderItem={(item, index) => (
-              <List.Item onClick={()=>handleChat(item.type,item.id)}>
+              <List.Item onClick={() => handleChat(item.type, item.id)}>
                 <List.Item.Meta
                   avatar={
                     (
@@ -101,6 +102,5 @@ const SideBar = function () {
       </div>
     )
   }
-
 };
 export default SideBar;
