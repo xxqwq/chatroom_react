@@ -13,6 +13,9 @@ class HttpRequest {
 
   interceptors() {
     this.instance.interceptors.request.use((config) => {
+      if(localStorage.getItem('access_token')){
+        config.headers['Authorization'] = 'Bearer '+ localStorage.getItem('access_token')
+      }
       return config
     }, (error) => {
       return Promise.reject(error)
@@ -30,22 +33,22 @@ class HttpRequest {
     })
   }
 
-  get<T>(url: string, params: T): Promise<any> {
+  get<T>(url: string, params?: T): Promise<any> {
     return this.instance.get(url, {
       params
     })
   }
 
-  post<T>(url: string, data: T): Promise<any> {
+  post<T>(url: string, data?: T): Promise<any> {
     return this.instance.post(url, data)
   }
 
-  put<T>(url: string, data: T): Promise<any> {
+  put<T>(url: string, data?: T): Promise<any> {
     return this.instance.put(url, data)
   }
 
-  delete(url: string): Promise<any> {
-    return this.instance.delete(url)
+  delete<T>(url: string,data:T): Promise<any> {
+    return this.instance.delete(url,data)
   }
 }
 

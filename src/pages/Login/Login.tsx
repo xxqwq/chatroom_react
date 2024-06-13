@@ -2,12 +2,13 @@ import { LoginWrapper } from './style.js';
 import { Button, Form, Input, Card } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { login,register,sendCode } from '@/apis/login.ts'
+import { login, register, sendCode } from '@/apis/login.ts'
 
 const { Search } = Input
 const LoginAndResForm = ({ formType, toggleFormType }) => {
   const navigate = useNavigate()
   const [form] = Form.useForm()
+
 
   const handleLogin = async () => {
     try {
@@ -15,7 +16,8 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
         username: form.getFieldValue('username'),
         password: form.getFieldValue('password'),
       })
-      if (res.code == "200") {
+      if (res.code == 200) {
+        localStorage.setItem('access_token', res.data.access_token)
         navigate('/personCenter/1')
       }
     } catch (err) {
@@ -23,7 +25,7 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
     }
   }
 
-  const handleRegister = async() => {
+  const handleRegister = async () => {
     form.getFieldValue('email')
     try {
       const res = await register({
@@ -43,14 +45,14 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
     }
   }
 
-  const handleSend = async()=>{
+  const handleSend = async () => {
     console.log(form.getFieldsValue())
-    try{
+    try {
       const res = await sendCode({
         email: form.getFieldValue('email')
       })
       console.log(res)
-    }catch (err) {
+    } catch (err) {
       console.log(err)
     }
   }
@@ -58,7 +60,7 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
     return (
       <Form form={form}>
         <Form.Item label='账号' name='username'>
-          <Input placeholder='请输入账号' prefix={<UserOutlined />}/>
+          <Input placeholder='请输入账号' prefix={<UserOutlined />} />
         </Form.Item>
         <Form.Item label='密码' name='password'>
           <Input
@@ -100,7 +102,7 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
             placeholder="请输入验证码"
             allowClear
             enterButton="发送验证码"
-          onSearch={handleSend}
+            onSearch={handleSend}
           />
         </Form.Item>
         <Form.Item style={{ textAlign: 'center' }}>

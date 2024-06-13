@@ -1,11 +1,13 @@
-import SideBar from './components/SiderBar/SiderBar';
 import { Routes, Route } from 'react-router-dom';
+import zhCN from 'antd/locale/zh_CN';
+import 'dayjs/locale/zh-cn';
+import SideBar from './components/SiderBar/SiderBar';
 import Login from './pages/Login/Login';
 import Chat from './pages/Chat/Chat';
 import PersonCenter from './pages/PersonCenter/PersonCenter';
 import NotFound from './pages/NotFound/NotFound';
 
-import { Layout } from 'antd';
+import { ConfigProvider, Layout } from 'antd';
 const { Sider } = Layout;
 
 const siderStyle: React.CSSProperties = {
@@ -25,11 +27,12 @@ const defaultPage: React.CSSProperties = {
 
 function App() {
   return (
-    <Layout style={{ height: '100%' }}>
-      <Sider style={siderStyle} width={250}>
-        <SideBar></SideBar>
-      </Sider>
-      <Layout>
+    <ConfigProvider locale={zhCN}>
+      <Layout style={{ height: '100%' }}>
+        <Sider style={siderStyle} width={250}>
+          <SideBar></SideBar>
+        </Sider>
+        <Layout>
           <Routes>
             <Route path='/' element={<div style={defaultPage}>
               登录获取更好的体验
@@ -39,8 +42,9 @@ function App() {
             <Route path='/personCenter/:id' element={<PersonCenter />}></Route>
             <Route path='*' element={<NotFound />}></Route>
           </Routes>
+        </Layout>
       </Layout>
-    </Layout>
+    </ConfigProvider>
   );
 }
 
