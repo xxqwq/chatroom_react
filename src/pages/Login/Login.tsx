@@ -18,7 +18,7 @@ const LoginAndResForm = ({ formType, toggleFormType }) => {
       })
       if (res.code == 200) {
         localStorage.setItem('access_token', res.data.access_token)
-        navigate('/personCenter/1')
+        navigate('/personCenter')
       }
     } catch (err) {
       console.log(err)

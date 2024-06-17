@@ -1,17 +1,19 @@
 import { Avatar, Card, Skeleton, Descriptions, Flex, Button, Modal, Form, Input, Radio, DatePicker, Select, message, Upload } from 'antd';
 import type { DescriptionsProps, UploadProps } from 'antd';
 import { useSelector, useDispatch } from 'react-redux';
-import dayjs from 'dayjs';
-import { logout } from '@/apis/login.ts'
-import { getUserInfo, changeProfile, changePassword } from '@/apis/user.ts'
-import { setUserInfo } from '@/store/user';
 import { useForm } from 'antd/es/form/Form';
 import { useNavigate } from 'react-router-dom';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import dayjs from 'dayjs';
+import { logout } from '@/apis/login.ts'
+import { getUserInfo, changeProfile, changePassword, uploadAvatar } from '@/apis/user.ts'
+import { clearUserInfo, setUserInfo } from '@/store/user';
+
 
 const EditModal = function ({ openModal, setOpenModal, getProfile, userInfo, form }) {
   const [loading, setLoading] = useState(false);
-  const [imageUrl, setImageUrl] = useState<string>();
+  const [imageUrl, setImageUrl] = useState(userInfo.avatar);
+
   const handleOk = async () => {
     setOpenModal(false)
     try {
@@ -24,64 +26,56 @@ const EditModal = function ({ openModal, setOpenModal, getProfile, userInfo, for
     }
   };
 
-  const handleCancel = () => {
-    setOpenModal(false)
-  };
-
-  // 图片修改
-  const getBase64 = (img: any, callback: (url: string) => void) => {
-    const reader = new FileReader();
-    reader.addEventListener('load', () => callback(reader.result as string));
-    reader.readAsDataURL(img);
-  };
-
+  // 图片上传前校验
   const beforeUpload = (file: any) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
     if (!isJpgOrPng) {
-      message.error('You can only upload JPG/PNG file!');
+      message.error('只能上传jpeg格式或png格式的照片!');
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
+    const isLt2M = file.size / 1024 / 1024 < 10;
     if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
+      message.error('图片应该小于10MB!');
     }
     return isJpgOrPng && isLt2M;
   };
 
+  // 图片上传
   const handleChange: UploadProps['onChange'] = (info) => {
     if (info.file.status === 'uploading') {
       setLoading(true);
-      return;
     }
     if (info.file.status === 'done') {
-      getBase64(info.file.originFileObj, (url) => {
-        setLoading(false);
-        setImageUrl(url);
-      });
+      message.success('上传成功')
+      setImageUrl(info.file.response.data.url)
+      setLoading(false)
     }
   };
 
   const uploadButton = (
     <button style={{ border: 0, background: 'none' }} type="button">
       {loading ? <LoadingOutlined /> : <PlusOutlined />}
-      <div style={{ marginTop: 8 }}>Upload</div>
+      <div style={{ marginTop: 8 }}>上传头像</div>
     </button>
   );
-   
+
   return (
-    <Modal title='编辑个人资料' centered okText='保存' cancelText='取消' open={openModal} onOk={handleOk} onCancel={handleCancel} >
+    <Modal title='编辑个人资料' centered okText='保存' cancelText='取消' open={openModal} onOk={handleOk} onCancel={() => setOpenModal(false)} >
       <Form layout='horizontal' form={form}>
         <Form.Item
           label='头像'
         >
           <Upload
-            name="avatar"
+            name="files"
             listType="picture-circle"
-            className="avatar-uploader"
             showUploadList={false}
-            action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
             beforeUpload={beforeUpload}
+            action="http://localhost:5000/upload/upload_img"
+            headers={
+              {
+                Authorization: 'Bearer ' + localStorage.getItem('access_token')
+              }
+            }
             onChange={handleChange}
-            defaultFileList={userInfo.avatar}
           >
             {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
           </Upload>
@@ -111,7 +105,7 @@ const EditModal = function ({ openModal, setOpenModal, getProfile, userInfo, for
           label='生日'
           name='birthday'
         >
-          <DatePicker placeholder='请输入您的生日' defaultValue={dayjs(userInfo.birthday)} style={{ width: '100%' }} />
+          <DatePicker placeholder='请输入您的生日' defaultValue={userInfo.birthday ? dayjs(userInfo.birthday) : dayjs()} style={{ width: '100%' }} />
         </Form.Item>
         <Form.Item
           label='邮箱'
@@ -156,7 +150,6 @@ const ChangePwdModal = function ({ openModal, setOpenModal, form }) {
     let old_password = form.getFieldValue('old_password')
     let new_password = form.getFieldValue('new_password')
     let confirm_password = form.getFieldValue('confirm_password')
-    console.log(old_password, new_password, confirm_password)
     if (confirm_password !== old_password) {
       message.warning('两次密码不一致')
       return
@@ -175,12 +168,9 @@ const ChangePwdModal = function ({ openModal, setOpenModal, form }) {
     }
   };
 
-  const handleCancel = () => {
-    setOpenModal(false)
-  };
 
   return (
-    <Modal title='修改密码' centered okText='确认' cancelText='取消' open={openModal} onOk={handleOk} onCancel={handleCancel} >
+    <Modal title='修改密码' centered okText='确认' cancelText='取消' open={openModal} onOk={handleOk} onCancel={() => setOpenModal(false)} >
       <Form layout='horizontal' form={form}>
         <Form.Item
           label='原密码'
@@ -215,25 +205,24 @@ const PersonCenter = function () {
   const dispatch = useDispatch()
 
   // 获取个人信息
-  const getProfile = async () => {
+  const getProfile = useCallback(async () => {
+    setLoading(true)
     try {
       const res = await getUserInfo()
       if (res.code == 200) {
         dispatch(setUserInfo(res.data))
+        setLoading(false)
       }
     } catch (err) {
       console.log(err)
     }
-  }
+  },[])
 
   useEffect(() => {
     getProfile()
-    setTimeout(() => {
-      setLoading(false)
-    }, 1000)
   }, [])
 
-  const date = dayjs(userInfo.birthday).format('YYYY-MM-DD')
+  const date = userInfo.birthday ? dayjs(userInfo.birthday).format('YYYY-MM-DD') : dayjs(new Date()).format('YYYY-MM-DD')
   const items: DescriptionsProps['items'] = [
     {
       key: 'nickname',
@@ -283,6 +272,7 @@ const PersonCenter = function () {
       const res = await logout()
       if (res.code == 200) {
         localStorage.removeItem('access_token')
+        dispatch(clearUserInfo())
         navigate('/login')
       }
     } catch (err) {

@@ -13,8 +13,8 @@ class HttpRequest {
 
   interceptors() {
     this.instance.interceptors.request.use((config) => {
-      if(localStorage.getItem('access_token')){
-        config.headers['Authorization'] = 'Bearer '+ localStorage.getItem('access_token')
+      if (localStorage.getItem('access_token')) {
+        config.headers['Authorization'] = 'Bearer ' + localStorage.getItem('access_token')
       }
       return config
     }, (error) => {
@@ -22,9 +22,10 @@ class HttpRequest {
     })
 
     this.instance.interceptors.response.use((res) => {
-      if (res.data.code == '200') {
-        message.success(res.data.message)
-      }else{
+      if (res.data.code == 200) {
+        if (res.data.message !== '获取成功') message.success(res.data.message)
+        console.log(res.data.message)
+      } else {
         message.error(res.data.message)
       }
       return res.data
@@ -47,8 +48,16 @@ class HttpRequest {
     return this.instance.put(url, data)
   }
 
-  delete<T>(url: string,data:T): Promise<any> {
-    return this.instance.delete(url,data)
+  delete<T>(url: string, data: T): Promise<any> {
+    return this.instance.delete(url, data)
+  }
+
+  post_img<T>(url: string, data: T): Promise<any> {
+    return this.instance.post(url, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
   }
 }
 

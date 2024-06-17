@@ -20,3 +20,10 @@ export function changePassword<T>(data: T) {
 export function changeProfile<T>(data: T) {
   return request.post('/auth/edit_profile', data)
 }
+
+/**
+ * 上传头像
+ */
+export function uploadAvatar<T>(data: T) {
+  return request.post_img('/upload/upload_img', data)
+}

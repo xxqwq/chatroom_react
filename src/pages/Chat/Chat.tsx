@@ -1,7 +1,7 @@
-import { Layout, Input, Flex, Button, Avatar, message } from 'antd';
+import { Layout, Input, Flex, Button, Avatar, message, Modal } from 'antd';
 import { LeftOutlined } from '@ant-design/icons'
 import { MemberItemWrapper, MemberListWrapper, ButtonWrapper } from './style.js'
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 const { TextArea } = Input;
 const { Header, Content, Footer } = Layout;
 
@@ -34,7 +34,7 @@ const footerStyle: React.CSSProperties = {
 };
 
 
-const DialogPoper = function ({ identity, message, nickName }) {
+const DialogPoper = function ({ identity, message, nickname }) {
   const [position, setPosition] = useState('start')
 
   useEffect(() => {
@@ -48,26 +48,26 @@ const DialogPoper = function ({ identity, message, nickName }) {
   if (position === 'start') {
     return (
       <Flex justify='start' align='center' style={{ margin: '10px 10px', maxWidth: '45%' }}>
-        <Flex vertical justify='start' align='start'>
-          <div style={{ color: '#555', marginLeft: '5px' }}>{nickName}</div>
-          <div style={{ background: '#fff', padding: '8px', margin: '5px', borderRadius: '10%' }}>
+        <Avatar size={48} style={{ minWidth: '48px' }} />
+        <Flex vertical justify='start' align='start' style={{ maxWidth: '100%' }}>
+          <div style={{ color: '#555', marginRight: 'auto' }}>{nickname}</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', background: '#fff', padding: '8px', margin: '5px 5px 5px 5px', whiteSpace: 'pre-wrap', maxWidth: 'calc(100% - 10px)', textAlign: 'start' }}>
             {message}
           </div>
         </Flex>
-        <Avatar size={48} />
       </Flex>
     )
   } else {
-    return (
-      <Flex justify='end' align='center' style={{ margin: '10px 10px', maxWidth: '100%' }}>
-        <Flex vertical justify='start' align='start' style={{ maxWidth: '100%' }}>
-          <div style={{ color: '#555', marginLeft: 'auto' }}>{nickName}</div>
-          <div style={{ background: '#fff', padding: '8px', margin: '5px 5px 5px auto', borderRadius: '10px', wordWrap: 'break-word', maxWidth: 'calc(100% - 48px)', textAlign: 'start' }}>
-            {message}
-          </div>
-        </Flex>
-        <Avatar size={48} style={{ minWidth: '48px' }} />
+    return (<Flex justify='end' align='center' style={{ margin: '10px 10px', maxWidth: '100%' }}>
+      <Flex vertical justify='start' align='start' style={{ maxWidth: '100%' }}>
+        <div style={{ color: '#555', marginLeft: 'auto' }}>{nickname}</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', background: '#fff', padding: '8px', margin: '5px 5px 5px 5px', whiteSpace: 'pre-wrap', maxWidth: 'calc(100% - 10px)', textAlign: 'start' }}>
+          {message}
+        </div>
       </Flex>
+      <Avatar size={48} style={{ minWidth: '48px' }} />
+    </Flex>
+
     )
   }
 }
@@ -104,89 +104,89 @@ const MemberList = function () {
   const memberList = [
     {
       avatar: '',
-      nickName: '路人1',
+      nickname: '路人1',
       role: '用户'
     },
     {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     },
     {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     }, {
       avatar: '',
-      nickName: '路人甲',
+      nickname: '路人甲',
       role: '用户'
     },
   ]
@@ -201,7 +201,7 @@ const MemberList = function () {
               <MemberItemWrapper key={index} >
                 <Flex align='center'>
                   <Avatar size='small' />
-                  <div style={{ marginLeft: '10px' }}>{item.nickName}</div>
+                  <div style={{ marginLeft: '10px' }}>{item.nickname}</div>
                 </Flex>
               </MemberItemWrapper>
             )
@@ -215,17 +215,20 @@ const MemberList = function () {
 const Home = function () {
   const [msg, setMessage] = useState('')
   const [messages, setMessages] = useState([])
+  const [searchParams] = useSearchParams()
+  console.log(searchParams.get('nickname'))
   const navigate = useNavigate()
   // 聊天对象
   const { type, id } = useParams()
+  const nickname = searchParams.get('nickname')
   const handleSend = () => {
     message.success('发送成功')
     setMessages((prev) => [
       ...prev,
       {
-        id: prev.length,
+        id: id,
         identity: 'me',
-        nickName: '路人1',
+        nickname,
         message: msg
       }
     ])
@@ -237,18 +240,18 @@ const Home = function () {
   }, [messages])
 
   const handleBack = () => {
-    navigate('/personCenter/1')
+    navigate('/personCenter')
   }
 
   return (
     <>
-      <Header style={headerStyle} onClick={handleBack}>
-        <ButtonWrapper >
+      <Header style={headerStyle}>
+        <ButtonWrapper onClick={handleBack}>
           {/* <Button shape='round' icon={<LeftOutlined />}>返回首页</Button> */}
           <LeftOutlined />
           <span>返回首页</span>
-          </ButtonWrapper>
-        <div style={{ textAlign: 'center', flexGrow: 1 }}>{id}</div>
+        </ButtonWrapper>
+        <div style={{ textAlign: 'center', flexGrow: 1 }}>{nickname}</div>
       </Header>
       <Content style={contentStyle}>
         <MainContent messages={messages} />

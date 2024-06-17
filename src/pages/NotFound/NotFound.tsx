@@ -5,7 +5,7 @@ export default function () {
   const navigate = useNavigate()
 
   const handleBack = () => {
-    navigate('/personCenter/1')
+    navigate('/home')
   }
 
   return (
