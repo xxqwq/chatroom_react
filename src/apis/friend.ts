@@ -50,3 +50,13 @@ export const searchPeople = (params) => {
 export const searchUser = (params) => {
   return request.get('/friends/search_friend', params)
 }
+
+/**
+ * @description 获取好友信息
+ * @param user_id 用户id
+ */
+export const getFriendInfo = (user_id:string) => {
+  return request.get('/friends/get_friend_info', {
+    user_id
+  })
+}

@@ -17,4 +17,13 @@ export default defineConfig({
       '@': '/src', // 修改为你的实际路径
     },
   },
+  server:{
+    proxy: {
+      '/ws': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ws/, '')
+      }
+    }
+  }
 });

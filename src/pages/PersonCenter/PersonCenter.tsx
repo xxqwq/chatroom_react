@@ -77,7 +77,7 @@ const EditModal = function ({ openModal, setOpenModal, getProfile, userInfo, for
             }
             onChange={handleChange}
           >
-            {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+            {imageUrl ? <Avatar  src={imageUrl} style={{ width: '100%', height: '100%' }} /> : uploadButton}
           </Upload>
         </Form.Item>
         <Form.Item
@@ -216,7 +216,7 @@ const PersonCenter = function () {
     } catch (err) {
       console.log(err)
     }
-  },[])
+  }, [])
 
   useEffect(() => {
     getProfile()

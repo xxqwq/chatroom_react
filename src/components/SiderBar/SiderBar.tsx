@@ -1,10 +1,9 @@
-import { Button, List, Avatar, Input, Badge, Spin, FloatButton, Modal, Skeleton } from 'antd';
+import { Button, List, Avatar, Input, Badge, Spin, FloatButton, Modal } from 'antd';
 import { LoginOutlined, PlusOutlined, BellOutlined, AppstoreOutlined } from '@ant-design/icons';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { SiderWrapper } from './style.js';
-import { getFriendList, searchPeople, sendFriendRequest, getFriendRequest,handleFriendRequest } from '@/apis/friend'
+import { getFriendList, searchPeople, sendFriendRequest, getFriendRequest, handleFriendRequest } from '@/apis/friend'
 import { useDebounce } from '../../utils/debounce.ts'
-import { useSelector } from 'react-redux';
 
 const { Search } = Input
 const SideBar = function () {
@@ -19,8 +18,10 @@ const SideBar = function () {
   // 好友数据
   const [friendList, setFriendList] = useState([])
   useEffect(() => {
-    getFriendListData()
-    getFriendRequestListData()
+    if(localStorage.getItem('access_token')){
+      getFriendListData()
+      getFriendRequestListData()
+    }
   }, [location.pathname])
 
   // 获取好友列表
@@ -64,7 +65,7 @@ const SideBar = function () {
   }
 
   // 获取好友请求
-  const getFriendRequestListData = async ()=>{
+  const getFriendRequestListData = async () => {
     try {
       const res = await getFriendRequest()
       console.log(res)
@@ -186,7 +187,8 @@ const SideBar = function () {
                     respond: 1
                   })
                   setNoticeModalOpen(false)
-                }}>同意请求</Button>, 
+                  getFriendListData()
+                }}>同意请求</Button>,
                 <Button onClick={() => {
                   handleFriendRequest({
                     sender_id: item.id,
@@ -194,19 +196,18 @@ const SideBar = function () {
                   })
                   setNoticeModalOpen(false)
                 }} danger>拒绝请求</Button>]}>
-                  {/* <Skeleton avatar title={false} loading={item} active> */}
-                  
                   <List.Item.Meta
                     avatar={
                       (
-                        <Avatar size="large" src={item.avatar} />
+                        <Badge count={requestList.length}>
+                          <Avatar size="large" src={item.avatar} />
+                        </Badge>
                       )
                     }
                     title={<a >{item.nickname}(用户名:{item.username})</a>
                     }
                     description={item.signature}
                   />
-                  {/* </Skeleton> */}
                 </List.Item>
               )}
             />

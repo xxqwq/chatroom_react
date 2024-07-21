@@ -24,13 +24,32 @@ class HttpRequest {
     this.instance.interceptors.response.use((res) => {
       if (res.data.code == 200) {
         if (res.data.message !== '获取成功') message.success(res.data.message)
-        console.log(res.data.message)
       } else {
         message.error(res.data.message)
       }
       return res.data
     }, (error) => {
-      return Promise.reject(error)
+      console.log(error);
+      let code = error.response.data.code
+      let msg = error.response.data.message
+      if (!msg) {
+        switch (code) {
+          case 401:
+            message.error('请先登录')
+            break
+          case 403:
+            message.error('权限不足')
+            break
+          case 404:
+            message.error('请求资源不存在')
+            break
+          default:
+            message.error('未知错误')
+        }
+      }else {
+        message.error(msg)
+      }
+      return Promise.reject(msg)
     })
   }
 
